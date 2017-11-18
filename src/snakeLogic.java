@@ -1,5 +1,3 @@
-package snake;
-
 import java.util.Arrays;
 
 public class snakeLogic {

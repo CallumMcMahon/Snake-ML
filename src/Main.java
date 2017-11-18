@@ -1,5 +1,3 @@
-package snake;
-
 import javax.swing.*;
 
 import static java.lang.Thread.sleep;

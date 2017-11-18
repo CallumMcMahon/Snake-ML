@@ -1,5 +1,3 @@
-package snake;//package javaclasses;
-
 import java.io.IOException;
 
 public abstract class EasyIn {

@@ -1,5 +1,3 @@
-package snake;
-
 /**
  * Created by mcmah on 15/11/2017.
  */
