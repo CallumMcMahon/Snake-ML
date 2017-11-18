@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Isotope - combination filters with a function</h1>
+
+
+<script>
+var count = 0;
+window.onload = function () {
+  var elems = document.body.getElementsByTagName("*");
+  for(var i = 0; i < elems.length; i++)
+  {
+      var properties = (elems[i].currentStyle || window.getComputedStyle(elems[i], false));
+      background = properties.backgroundImage.slice(4, -1);
+      if(background.indexOf("https://callum-mcmahon.squarespace.com/shop/") > -1)
+      {
+         count++;
+      }
+  }
+  alert(count);
+};
+</script>
+<h2>window.onload</h2>
+
+</body>
+</html>
