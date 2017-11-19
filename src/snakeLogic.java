@@ -50,7 +50,9 @@ public class snakeLogic {
                 movingDirection = command;
             }
             else {
-                System.out.println("Collision! Player "+playerNumber+" dead! Moves:" + movesMade + " Snake size:" + snakeSize);
+                if(NNfeatures[0] == 0){
+                    System.out.println("Collision! Player "+playerNumber+" dead! Moves:" + movesMade + " Snake size:" + snakeSize);
+                }
                 isAlive = false;
             }
         }

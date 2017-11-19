@@ -43,21 +43,17 @@ public class Main {
         GameLoop[] newgame = new GameLoop[population];
 
         double maxfit = 0;
-        int maxindex = 0;
         boolean show;
         for (int k = 0;k<population;k++) {
             show = false;
             newgame[k] = new GameLoop(settings, frame, syncObject, AI, show,false);
             newgame[k].setNet();
             newgame[k].net.fitness = newgame[k].loop();
-            if (newgame[k].net.fitness>maxfit){maxfit = newgame[k].net.fitness; maxindex = k;}
+            if (newgame[k].net.fitness>maxfit){maxfit = newgame[k].net.fitness;
+                System.out.println(maxfit);}
         }
-        System.out.println(maxfit);
-        try {
-            Thread.sleep(4000);
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-        }
+        System.out.println("max fitness for this generation was: "+maxfit);
+        EasyIn.pause("Press enter to view replay");
 
         Arrays.sort(newgame);
 

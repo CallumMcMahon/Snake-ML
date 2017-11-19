@@ -58,7 +58,7 @@ public class map {
             }
         }
         if(deadPlayers == players){
-            System.out.println("Game over!");
+            //System.out.println("Game over!");
             gameStatus = false;
         }
         deadPlayers = 0;

@@ -147,6 +147,7 @@ public class swingGUI extends JFrame implements KeyListener{
             case KeyEvent.VK_DOWN: key[1] = "s";break;
             case KeyEvent.VK_RIGHT: key[1] = "d";break;
             case KeyEvent.VK_ESCAPE: gameMap.setGameStatus(false);
+            default: break;
         }
         if(slowMode){ //in turn based modes only start new turn when key event happens
             allMovesMade();
