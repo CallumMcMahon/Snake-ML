@@ -114,7 +114,7 @@ public class swingGUI extends JFrame implements KeyListener{
         frame.setVisible(true);
         frame.setResizable(false);
         frame.repaint();
-        if(slowMode == true){ //resetSnake move commands if in turn based games after each turn
+        if(slowMode){ //resetSnake move commands if in turn based games after each turn
             for(int i = 0;i<key.length;i++){
                 key[i] = "";
             }

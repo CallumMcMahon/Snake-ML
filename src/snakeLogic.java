@@ -61,6 +61,7 @@ public class snakeLogic {
     }
 
     public void updateNNinputs(){
+        NNfeatures = new double[]{0,0,0,1,1};
         double[] clear = {0,0,0,0};
         for (int i = 0; i < 6; i++) {
             if (clear[0] == i && collisionDetection(new int[]{headPos[0]-i, headPos[1]}, "w")[0] != -1) {
@@ -78,22 +79,23 @@ public class snakeLogic {
         }
         int start = 0;
         switch(movingDirection){
-            case "w": start = 3;break;
-            case "d": start = 0;break;
-            case "s": start = 1;break;
-            case "a": start = 2;break;
+            case "w": start = 3; break;
+            case "d": start = 0; NNfeatures[4] = -1; break;
+            case "s": start = 1; NNfeatures[3] = -1; NNfeatures[4] = -1; break;
+            case "a": start = 2; NNfeatures[3] = -1; break;
         }
         int j = 0;
         for (int i=start;j<3; j++){
             NNfeatures[j] = (clear[i]-3.0)/3.0;
             i = (i+1) % 4;
         }
-        NNfeatures[3] = (globalMap.getApplePos()[0] - headPos[0])/mapSize;
-        NNfeatures[4] = (globalMap.getApplePos()[1] - headPos[1])/mapSize;
+        NNfeatures[3] =0;//*= (globalMap.getApplePos()[0] - headPos[0])/mapSize; // left/right distance
+        NNfeatures[4] =0;//*= (globalMap.getApplePos()[1] - headPos[1])/mapSize; // up/down distance
         for(int i = 0;i<5;i++){
-            System.out.println(NNfeatures[i]);
+            //System.out.println(NNfeatures[i]); //debug output
         }
-        System.out.println("---------------");
+        //System.out.println(movingDirection); //debug output
+        //System.out.println("---------------"); //debug output
     }
 
     public int[] collisionDetection(int[] point, String direction){

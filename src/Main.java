@@ -1,5 +1,7 @@
 import javax.swing.*;
 
+import java.util.Arrays;
+
 import static java.lang.Thread.sleep;
 
 /**
@@ -37,22 +39,34 @@ public class Main {
             AI = true;
         }
 
-        GameLoop[] newgame = new GameLoop[101];
+        int population = 1000;
+        GameLoop[] newgame = new GameLoop[population];
 
         double maxfit = 0;
         int maxindex = 0;
-        double tempfitness;
-        for (int k = 0;k<100;k++) {
-            newgame[k] = new GameLoop(settings, frame, syncObject, AI, false);
+        boolean show;
+        for (int k = 0;k<population;k++) {
+            show = false;
+            newgame[k] = new GameLoop(settings, frame, syncObject, AI, show,false);
             newgame[k].setNet();
-            tempfitness = newgame[k].loop();
-            newgame[k].net.fitness =tempfitness;
+            newgame[k].net.fitness = newgame[k].loop();
             if (newgame[k].net.fitness>maxfit){maxfit = newgame[k].net.fitness; maxindex = k;}
         }
-        newgame[100] = new GameLoop(settings,frame,syncObject,true,true);
-        newgame[100].setNet(newgame[maxindex].getNet());
-        newgame[100].loop();
+        System.out.println(maxfit);
+        try {
+            Thread.sleep(4000);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
 
+        Arrays.sort(newgame);
+
+        GameLoop testgame;
+        for(int i = population-1;i>population-5;i--) {
+            testgame = new GameLoop(settings, frame, syncObject, AI, true,false);
+            testgame.net = newgame[i].net;
+            testgame.loop();
+        }
     }
 
     public static int[] settings(){

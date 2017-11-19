@@ -3,7 +3,7 @@ import javax.swing.*;
 /**
  * Created by mcmah on 13/11/2017.
  */
-public class GameLoop {
+public class GameLoop implements Comparable<GameLoop>{
     int[] settings;
     boolean AI;
     myNet net;
@@ -15,7 +15,7 @@ public class GameLoop {
     Object syncObject;
     boolean showgui = false;
 
-    public GameLoop(int[] settings, JFrame frame, Object syncObject, boolean AI, boolean showgui) {
+    public GameLoop(int[] settings, JFrame frame, Object syncObject, boolean AI, boolean showgui, boolean slowmode) {
 
         this.AI = AI;
         this.showgui = showgui;
@@ -47,6 +47,7 @@ public class GameLoop {
         gameMap.combine(); //add the snake positions to the shared map
         this.syncObject = syncObject;
         this.gui = new swingGUI(gameMap, frame, syncObject,false);
+        if ( ! slowmode){gui.setSlowMode(slowmode);}
 
         int playerTurn = 0;
 
@@ -64,6 +65,11 @@ public class GameLoop {
 
     public void setShowgui(boolean showgui){this.showgui = showgui;}
 
+    @Override
+    public int compareTo(GameLoop game) {
+        return Double.compare(this.net.fitness,game.net.fitness);
+    }
+
     public double loop() {
         if(showgui){gui.showGUI();}
         if(AI){
@@ -72,7 +78,7 @@ public class GameLoop {
             }
 
             gui.key[0] = net.calcOutput(snakeLogics[0].NNfeatures,"w");
-            System.out.println("gui key is:"+gui.key[0]);
+            //System.out.println("gui key is:"+gui.key[0]);
 
         }
         else {
@@ -119,19 +125,19 @@ public class GameLoop {
                     }
                 }
             }
-            else {//or wait 100 milliseconds and keep running the game logic without the need for user input
+            else if(AI == false || showgui == true) {//or wait 100 milliseconds and keep running the game logic without the need for user input
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
                     Thread.currentThread().interrupt();
                 }
             }
-            if(AI){
+            if(AI) { //calculate input from net
                 gui.key[0] = net.calcOutput(snakeLogics[0].NNfeatures,"w");
-                System.out.println("gui key is:"+gui.key[0]);
+                //System.out.println("gui key is:"+gui.key[0]);
 
             }
-            System.out.println(snakeLogics[0].snakeSize);
+            //System.out.println(snakeLogics[0].snakeSize);
         }
         gui.frame.dispose();
         return (double) snakeLogics[0].movesMade;

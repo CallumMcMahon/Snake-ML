@@ -57,7 +57,6 @@ public class map {
                 deadPlayers += 1;
             }
         }
-        System.out.println(deadPlayers+" "+players);
         if(deadPlayers == players){
             System.out.println("Game over!");
             gameStatus = false;
@@ -99,6 +98,6 @@ public class map {
         combinedMap = new int[mapSize][mapSize];
         this.players = players;
         separateMaps = new snakeLogic[players];
-        spawnApple();
+        //spawnApple();
     }
 }
