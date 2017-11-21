@@ -17,7 +17,7 @@ public class geneticAlgorithm {
         if (pop.size() <10){breedingSize = pop.size();}
         population newPopulation = new population(pop.size(), false);
 
-        // Keep our best individual
+        // Keep our best individual 
         if (elitism) {
             for(int i =0;i<5;i++) {
                 newPopulation.saveNet(i, pop.nets[i]);
