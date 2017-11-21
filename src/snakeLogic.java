@@ -50,7 +50,7 @@ public class snakeLogic {
                 movingDirection = command;
             }
             else {
-                if(NNfeatures[0] == 0){
+                if(NNfeatures[0] == 0 && NNfeatures[1] == 0 && NNfeatures[2] == 0){
                     System.out.println("Collision! Player "+playerNumber+" dead! Moves:" + movesMade + " Snake size:" + snakeSize);
                 }
                 isAlive = false;
@@ -157,10 +157,10 @@ public class snakeLogic {
     public void resetSnake(){
         this.map = new int[mapSize][mapSize];
         if (playerNumber % 2 == 0){
-            for (int row = mapSize - snakeSize - 1, i = 1; i <= snakeSize; row++, i++) {
-                map[row][playerNumber +1] = i;
+            for (int row = 5/**mapSize - snakeSize - 1*/, i = 1; i <= snakeSize; row++, i++) {
+                map[row][playerNumber +5] = i;
             }
-            headPos = new int[]{mapSize - snakeSize -1, playerNumber +1};
+            headPos = new int[]{5/*mapSize - snakeSize -1*/, playerNumber +5};
         }
         else{
             for (int row = snakeSize, i = 1; i <= snakeSize; row--, i++) {

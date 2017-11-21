@@ -98,6 +98,6 @@ public class map {
         combinedMap = new int[mapSize][mapSize];
         this.players = players;
         separateMaps = new snakeLogic[players];
-        //spawnApple();
+        spawnApple();
     }
 }

@@ -38,32 +38,33 @@ public class Main {
             frame = swingSettings.makeFirstFrame();
             AI = true;
         }
-
-        int population = 1000;
-        GameLoop[] newgame = new GameLoop[population];
-
-        double maxfit = 0;
-        boolean show;
-        for (int k = 0;k<population;k++) {
-            show = false;
-            newgame[k] = new GameLoop(settings, frame, syncObject, AI, show,false);
-            newgame[k].setNet();
-            newgame[k].net.fitness = newgame[k].loop();
-            if (newgame[k].net.fitness>maxfit){maxfit = newgame[k].net.fitness;
-                System.out.println(maxfit);}
+        //-----GENETIC ALGORITHM-----
+        int popSize = 1000;
+        population pop = new population(popSize,true);
+        pop.setSettings(settings);
+        // Evolve our population until we reach an optimum solution
+        int generationCount = 0;
+        double generationfitness = 0;
+        while (generationfitness < 49) {
+            generationCount++;
+            System.out.println("Generation: " + generationCount + " Fittest: " + generationfitness);
+            pop = geneticAlgorithm.evolvePopulation(pop);
+            pop.evaluateFitness();
+            generationfitness = pop.getFittest();
         }
-        System.out.println("max fitness for this generation was: "+maxfit);
+        System.out.println("Solution found!");
+        System.out.println("Generation: " + generationCount);
+
+
         EasyIn.pause("Press enter to view replay");
 
-        Arrays.sort(newgame);
+        GameLoop solutionGame;
+        solutionGame = new GameLoop(settings, frame, syncObject, AI, true,false);
+        solutionGame.setNet(pop.nets[0]);
+        solutionGame.loop();
 
-        GameLoop testgame;
-        for(int i = population-1;i>population-5;i--) {
-            testgame = new GameLoop(settings, frame, syncObject, AI, true,false);
-            testgame.net = newgame[i].net;
-            testgame.loop();
-        }
     }
+
 
     public static int[] settings(){
         System.out.println("Enter map size.");

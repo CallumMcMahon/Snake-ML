@@ -1,12 +1,12 @@
 /**
  * Created by mcmah on 15/11/2017.
  */
-public class myNet {
+public class myNet implements Comparable<myNet>{
 
 
     double[][] weights1;
     double[][] weights2;
-    double[][] biases;
+    int weightConnections;
     final int hiddenNeurons = 5;
     double fitness;
 
@@ -17,10 +17,14 @@ public class myNet {
     public double getFitness() {
         return fitness;
     }
-    public double[][][] getWeights(){return new double[][][]{weights1,weights2};}
 
     public void setFitness(double fitness) {
         this.fitness = fitness;
+    }
+
+    @Override
+    public int compareTo(myNet differentNet) {//order nets from best to worst for mating
+        return Double.compare(differentNet.fitness,this.fitness);
     }
 
     public static double[] matrixvectormult(double[][] A, double[] B) {
@@ -46,9 +50,9 @@ public class myNet {
         }
 
         return C;
-    }
+    } //basic inefficient implementation of matrix multiplication
 
-    public double[] sigmoidVector(double[] vector){
+    public double[] sigmoidVector(double[] vector){ //apply the sigmoid function to each element in vector
         double[] sig_form = new double[vector.length];
         for (int i = 0;i<vector.length;i++){
             sig_form[i] = sigmoidFunction(vector[i]);
@@ -56,9 +60,8 @@ public class myNet {
         return sig_form;
     }
 
-    public myNet(double[][] weights1,double[][] weights2){this.weights1=weights1;this.weights2=weights2;}
-
-    public myNet(int inputSize,int outputSize){
+    public myNet(int inputSize,int outputSize){ //initialise weights randomly with uniform distribution and range [-1,1]
+        weightConnections = hiddenNeurons * (inputSize+1);
         weights1 = new double[hiddenNeurons][inputSize+1];
         for (int i = 0; i < weights1.length; i++) {
             for (int j = 0;j<weights1[i].length;j++) {
@@ -73,7 +76,7 @@ public class myNet {
         }
     }
 
-    public String calcOutput(double[] input, String movingDirection){
+    public String calcOutput(double[] input, String movingDirection){ //feed-forward application of the network
         double[] biasinput;
         double[] hiddenLayer;
         double[] outputLayer;
