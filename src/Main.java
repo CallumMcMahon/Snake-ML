@@ -8,14 +8,19 @@ import static java.lang.Thread.sleep;
  * Created by Callum on 28/06/2017.
  */
 public class Main {
+
+    static JFrame frame;
+    static Object syncObject = new Object(); //have main method wait for settings class to finish
+
     public static void main(String[] args) {
         final int SNAKE_SIZE = 5;
         int[] settings;
-        JFrame frame;
-        Object syncObject = new Object(); //have main method wait for settings class to finish
-        boolean AI;
 
-        if(args.length == 0) {
+
+        boolean AI;
+        boolean rewatch = false;
+
+        if(args.length == 0 ) {//|| true
 
 
         /* GUI SETTINGS */
@@ -38,30 +43,37 @@ public class Main {
             frame = swingSettings.makeFirstFrame();
             AI = true;
         }
-        //-----GENETIC ALGORITHM-----
-        int popSize = 1000;
-        population pop = new population(popSize,true);
-        pop.setSettings(settings);
-        // Evolve our population until we reach an optimum solution
-        int generationCount = 0;
-        double generationfitness = 0;
-        while (generationfitness < 49) {
-            generationCount++;
-            System.out.println("Generation: " + generationCount + " Fittest: " + generationfitness);
-            pop = geneticAlgorithm.evolvePopulation(pop);
-            pop.evaluateFitness();
-            generationfitness = pop.getFittest();
+        if(!AI){
+            GameLoop humangame = new GameLoop(settings,frame,syncObject,false,true,true,0);
+            humangame.loop();
         }
-        System.out.println("Solution found!");
-        System.out.println("Generation: " + generationCount);
+        else {
+            //-----GENETIC ALGORITHM-----
+            int popSize = 100000;
+            population pop = new population(popSize, true);
+            pop.setSettings(settings);
+            // Evolve our population until we reach an optimum solution
+            int generationCount = 0;
+            double generationfitness = 0;
+            while (generationfitness <1100) {
+                generationCount++;
+                System.out.println("Generation: " + generationCount + " Fittest: " + generationfitness);
+                pop = geneticAlgorithm.evolvePopulation(pop);
+                pop.evaluateFitness();
+                generationfitness = pop.getFittest();
+            }
+            System.out.println("Solution found!");
+            System.out.println("Generation: " + generationCount+ " Fittest: " + generationfitness);
 
 
-        EasyIn.pause("Press enter to view replay");
+            EasyIn.pause("Press enter to view replay");
 
-        GameLoop solutionGame;
-        solutionGame = new GameLoop(settings, frame, syncObject, AI, true,false);
-        solutionGame.setNet(pop.nets[0]);
-        solutionGame.loop();
+            rewatch = true;
+            GameLoop solutionGame;
+            solutionGame = new GameLoop(settings, frame, syncObject, AI, true, false, 0);
+            solutionGame.setNet(pop.nets[0]);
+            solutionGame.loop();
+        }
 
     }
 

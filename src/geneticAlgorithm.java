@@ -5,7 +5,7 @@ public class geneticAlgorithm {
 
     /* GA parameters */
     private static final double uniformRate = 0.5;
-    private static final double mutationRate = 0.15;
+    private static final double mutationRate = 0.1;
     private static final boolean elitism = true;
     private static final int tournamentSize = 5;
     private static int breedingSize = 100;
@@ -14,28 +14,30 @@ public class geneticAlgorithm {
 
     // Evolve a population
     public static population evolvePopulation(population pop) {
-        if (pop.size() <10){breedingSize = pop.size();}
+        if (pop.size() <400){breedingSize = pop.size()/2;}
         population newPopulation = new population(pop.size(), false);
 
-        // Keep our best individual 
+        int elitismOffset;
         if (elitism) {
-            for(int i =0;i<5;i++) {
+            elitismOffset = 3;
+        } else {
+            elitismOffset = 0;
+        }
+
+        // Keep our best individual
+        if (elitism) {
+            for(int i =0;i<elitismOffset;i++) {
                 newPopulation.saveNet(i, pop.nets[i]);
             }
         }
 
         // Crossover population
-        int elitismOffset;
-        if (elitism) {
-            elitismOffset = 5;
-        } else {
-            elitismOffset = 0;
-        }
+
         // Loop over the population size and create new individuals with
         // crossover
         for (int i = elitismOffset; i < pop.size(); i++) {
-            myNet net1 = tournamentSelection(pop);
-            myNet net2 = tournamentSelection(pop);
+            myNet net1 = randomSelection(pop);
+            myNet net2 = randomSelection(pop);
             myNet newNet = crossover(net1, net2);
             newPopulation.saveNet(i, newNet);
         }
@@ -50,8 +52,22 @@ public class geneticAlgorithm {
 
     // Crossover individuals
     private static myNet crossover(myNet net1, myNet net2) {
-        myNet newNet = new myNet(5,3);
+        myNet newNet = new myNet(6,3);
         // Loop through genes
+        for (int i = 0; i < newNet.allWeights.length; i++) {
+            for (int j = 0; j < newNet.allWeights[i].length; j++) {
+                for (int k = 0; k < newNet.allWeights[i][j].length; k++) {
+                    if (Math.random() <= uniformRate) {
+                        newNet.allWeights[i][j][k] = net1.allWeights[i][j][k];
+                    } else {
+                        newNet.allWeights[i][j][k] = net2.allWeights[i][j][k];
+                    }
+                }
+            }
+        }
+
+
+        /**
         for (int i = 0; i < newNet.weights1.length; i++) {
             for (int j = 0; j < newNet.weights1[0].length; j++){
                 // Crossover
@@ -72,12 +88,25 @@ public class geneticAlgorithm {
                 }
             }
         }
+         **/
         return newNet;
     }
 
     // Mutate an individual
     private static void mutate(myNet net) {
         // Loop through genes
+
+        for (int i = 0; i < net.allWeights.length; i++) {
+            for (int j = 0; j < net.allWeights[i].length; j++) {
+                for (int k = 0; k < net.allWeights[i][j].length; k++) {
+                    if (Math.random() <= mutationRate) {
+                        net.allWeights[i][j][k] = 2*net.randomiser.nextGaussian();
+                    }
+                }
+            }
+        }
+
+        /**
         for (int i = 0; i < net.weights1.length; i++) {
             for (int j = 0; j < net.weights1[0].length; j++){
                 // Crossover
@@ -94,6 +123,7 @@ public class geneticAlgorithm {
                 }
             }
         }
+         **/
     }
 
     // Select individuals for crossover

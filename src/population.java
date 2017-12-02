@@ -18,17 +18,17 @@ public class population {
 
         if(initialise){
             for(int i=0;i<population;i++){
-                nets[i] = new myNet(5,3);
+                nets[i] = new myNet(6,3);
             }
         }
     }
 
     public void evaluateFitness(){
         for (int i=0;i<size();i++){
-            fitnessTester = new GameLoop(this.settings,null,null,true,false,false);
+            fitnessTester = new GameLoop(this.settings,null,null,true,false,false,i);//Main.frame,Main.syncObject,true,true,true,i);//
             fitnessTester.setNet(nets[i]);
             nets[i].fitness = fitnessTester.loop();
-            if(nets[i].fitness >10){ System.out.println(nets[i].fitness);}
+            //if(nets[i].fitness >30){ System.out.println(nets[i].fitness);}
         }
         Arrays.sort(nets);
     }

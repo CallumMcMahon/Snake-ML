@@ -15,7 +15,7 @@ public class GameLoop {
     Object syncObject;
     boolean showgui = false;
 
-    public GameLoop(int[] settings, JFrame frame, Object syncObject, boolean AI, boolean showgui, boolean slowmode) {
+    public GameLoop(int[] settings, JFrame frame, Object syncObject, boolean AI, boolean showgui, boolean slowmode, int gameNumber) {
 
         this.AI = AI;
         this.showgui = showgui;
@@ -39,7 +39,7 @@ public class GameLoop {
 
         snakeLogic.resetPlayerNumbers();//static method keeping track of index of players needs resetting
         snakeLogics = new snakeLogic[settings[0]]; //create snake array
-        gameMap = new map(mapSize, settings[0]); //create shared map for all players
+        gameMap = new map(mapSize, settings[0],gameNumber); //create shared map for all players
         for (int i = 0; i < settings[0]; i++) {
             snakeLogics[i] = new snakeLogic(SNAKE_SIZE, gameMap); //add snakes to the array based on number of players
             gameMap.setSeparateMaps(snakeLogics[i]); //link the individual snakes up to the shared map
@@ -70,9 +70,9 @@ public class GameLoop {
         if(AI){
             for (int i = 0; i < gameMap.players; i++) {//get neural net starting directions
                 snakeLogics[i].updateNNinputs();
+                snakeLogics[i].updateNNinputs(0);
                 commands[i] = net.calcOutput(snakeLogics[i].NNfeatures,"w");
             }
-            //System.out.println("gui key is:"+gui.key[0]);
 
         }
         else {
@@ -91,7 +91,11 @@ public class GameLoop {
             snakeLogics[i].setMovingDirection(commands[i]); //set initial directions as chosen by each player
         }
 
-        while (true) {//run the game logic each iteration of a loop
+        int turns = 0;
+
+        while (turns < 200) {//run the game logic each iteration of a loop
+
+            if(! showgui){turns+=1;}
 
             for (int i = 0; i < gameMap.players; i++) {
                 if (snakeLogics[i].isAlive) {
@@ -110,6 +114,7 @@ public class GameLoop {
 
             if(syncObject != null) {//non AI behaviour each turn
                 if (gui.getSlowMode() == true) {//depending on game style, wait for user input each move
+                    snakeLogics[0].updateNNinputs();
                     synchronized (syncObject) {
                         try {
                             syncObject.wait();
@@ -129,7 +134,9 @@ public class GameLoop {
             if(AI) {//AI behaviour each turn
                 for (int i = 0; i < gameMap.players; i++) {
                     snakeLogics[i].updateNNinputs();
-                    commands[i] = net.calcOutput(snakeLogics[i].NNfeatures, "w");
+                    snakeLogics[i].updateNNinputs(net.outputDirection);
+                    //snakeLogics[i].printFeatures();
+                    commands[i] = net.calcOutput(snakeLogics[i].NNfeatures, commands[i]);
                 }
                 //System.out.println("gui key is:"+gui.key[0]);
 
@@ -143,7 +150,9 @@ public class GameLoop {
         }
         if(syncObject != null){gui.frame.dispose();}
         //return (double) (snakeLogics[0].snakeSize *20 + snakeLogics[0].movesMade);
-        return (double) (snakeLogics[0].movesMade); //our fitness parameter
+        //return (double) (snakeLogics[0].snakeSize);
+        //return (double) (snakeLogics[0].movesMade); //our fitness parameter
+        return (double) ((snakeLogics[0].snakeSize-5)*50 - snakeLogics[0].movesMade);
     }
 
     public void resetSnakes(){

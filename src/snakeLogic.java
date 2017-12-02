@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Random;
 
 public class snakeLogic {
     int snakeSize;
@@ -6,7 +7,7 @@ public class snakeLogic {
     int mapSize;
     int[] headPos;
     String movingDirection;
-    double[] NNfeatures = new double[5];
+    double[] NNfeatures = new double[6];
     int movesMade = 0;
     int map[][];
     boolean growTail;
@@ -50,7 +51,7 @@ public class snakeLogic {
                 movingDirection = command;
             }
             else {
-                if(NNfeatures[0] == 0 && NNfeatures[1] == 0 && NNfeatures[2] == 0){
+                if(NNfeatures[0] == 0 && NNfeatures[1] == 0 && NNfeatures[2] == 0 && NNfeatures[3] == 0 && NNfeatures[4] == 0){
                     System.out.println("Collision! Player "+playerNumber+" dead! Moves:" + movesMade + " Snake size:" + snakeSize);
                 }
                 isAlive = false;
@@ -63,7 +64,7 @@ public class snakeLogic {
     }
 
     public void updateNNinputs(){
-        NNfeatures = new double[]{0,0,0,1,1};
+        NNfeatures = new double[]{0,0,0,1,1,0};
         double[] clear = {0,0,0,0};
         for (int i = 0; i < 6; i++) {
             if (clear[0] == i && collisionDetection(new int[]{headPos[0]-i, headPos[1]}, "w")[0] != -1) {
@@ -88,17 +89,23 @@ public class snakeLogic {
         }
         int j = 0;
         for (int i=start;j<3; j++){
-            NNfeatures[j] = (clear[i]-3.0)/3.0;
+            NNfeatures[j] = (clear[i]-3.0)/3.0; //TESTING non-BINARY INPUT
             i = (i+1) % 4;
         }
-        NNfeatures[3] =0;//*= (globalMap.getApplePos()[0] - headPos[0])/mapSize; // left/right distance
-        NNfeatures[4] =0;//*= (globalMap.getApplePos()[1] - headPos[1])/mapSize; // up/down distance
-        for(int i = 0;i<5;i++){
-            //System.out.println(NNfeatures[i]); //debug output
-        }
-        //System.out.println(movingDirection); //debug output
-        //System.out.println("---------------"); //debug output
+        NNfeatures[3] *= Math.signum((double)(globalMap.getApplePos()[0] - headPos[0])/(0.5*mapSize)); // left/right distance
+        //System.out.println((double)(globalMap.getApplePos()[1] - headPos[1])/mapSize);
+        NNfeatures[4] *= Math.signum((double)(globalMap.getApplePos()[1] - headPos[1])/(0.5*mapSize)); // up/down distance
     }
+
+    public void printFeatures(){
+        for(int i = 0;i<6;i++){
+            System.out.println(NNfeatures[i]); //debug output
+        }
+        System.out.println(movingDirection); //debug output
+        System.out.println("---------------"); //debug output
+    }
+
+    public void updateNNinputs(int lastDirection){NNfeatures[5] = (double)(lastDirection-1);}
 
     public int[] collisionDetection(int[] point, String direction){
         int[][] recentMap = globalMap.getCombinedMap();
@@ -148,19 +155,20 @@ public class snakeLogic {
         this.isAlive = true;
         this.mapSize = globalMap.getMapSize();
         playerNumber = genNextPlayer();
-        resetSnake();
         this.globalMap = globalMap;
+        resetSnake();
         growTail = false;
         movingDirection = "w";
     }
 
     public void resetSnake(){
+        int x = globalMap.seeded_apples.nextInt(10);
         this.map = new int[mapSize][mapSize];
         if (playerNumber % 2 == 0){
-            for (int row = 5/**mapSize - snakeSize - 1*/, i = 1; i <= snakeSize; row++, i++) {
-                map[row][playerNumber +5] = i;
+            for (int row = 5/*mapSize - snakeSize - 1*/, i = 1; i <= snakeSize; row++, i++) {
+                map[row][playerNumber +x] = i;
             }
-            headPos = new int[]{5/*mapSize - snakeSize -1*/, playerNumber +5};
+            headPos = new int[]{5/*mapSize - snakeSize -1*/, playerNumber +x};
         }
         else{
             for (int row = snakeSize, i = 1; i <= snakeSize; row--, i++) {

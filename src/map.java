@@ -1,3 +1,4 @@
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class map {
@@ -7,6 +8,7 @@ public class map {
     static int[][] combinedMap;
     boolean gameStatus = true;
     int[] applePos = {0,0};
+    Random seeded_apples;
 
     public int getMapSize() {return mapSize;}
 
@@ -21,10 +23,11 @@ public class map {
     }
 
     public void spawnApple(){
+
         int row,col;
         do {
-            row = ThreadLocalRandom.current().nextInt(0, mapSize);
-            col = ThreadLocalRandom.current().nextInt(0, mapSize);
+            row = seeded_apples.nextInt(mapSize);
+            col = seeded_apples.nextInt(mapSize);
         }while (combinedMap[row][col] != 0);
         combinedMap[row][col] = -2;
         applePos = new int[]{row,col};
@@ -94,10 +97,15 @@ public class map {
     }
 
     public map(int mapSize, int players){
+        this(mapSize,players,0);
+    }
+
+    public map(int mapSize, int players,int seed){
         this.mapSize = mapSize;
         combinedMap = new int[mapSize][mapSize];
         this.players = players;
         separateMaps = new snakeLogic[players];
+        seeded_apples = new Random(42);//seed);
         spawnApple();
     }
 }
