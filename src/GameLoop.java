@@ -22,7 +22,7 @@ public class GameLoop {
 
         switch (settings[2]) {
             case 0:
-                this.mapSize = 6;
+                this.mapSize = 8;
                 break;//only one menu choice offers small setting
             case 4:
             case 6:

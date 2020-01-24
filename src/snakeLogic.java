@@ -93,7 +93,6 @@ public class snakeLogic {
             i = (i+1) % 4;
         }
         NNfeatures[3] *= Math.signum((double)(globalMap.getApplePos()[0] - headPos[0])/(0.5*mapSize)); // left/right distance
-        //System.out.println((double)(globalMap.getApplePos()[1] - headPos[1])/mapSize);
         NNfeatures[4] *= Math.signum((double)(globalMap.getApplePos()[1] - headPos[1])/(0.5*mapSize)); // up/down distance
     }
 
@@ -162,13 +161,14 @@ public class snakeLogic {
     }
 
     public void resetSnake(){
-        int x = globalMap.seeded_apples.nextInt(10);
+        //int x = globalMap.seeded_apples.nextInt(mapSize-4);
         this.map = new int[mapSize][mapSize];
+        // add all snakes in a non-overlapping manner
         if (playerNumber % 2 == 0){
-            for (int row = 5/*mapSize - snakeSize - 1*/, i = 1; i <= snakeSize; row++, i++) {
-                map[row][playerNumber +x] = i;
+            for (int row = mapSize - snakeSize - 1, i = 1; i <= snakeSize; row++, i++) {
+                map[row][playerNumber] = i;
             }
-            headPos = new int[]{5/*mapSize - snakeSize -1*/, playerNumber +x};
+            headPos = new int[]{mapSize - snakeSize -1, playerNumber};
         }
         else{
             for (int row = snakeSize, i = 1; i <= snakeSize; row--, i++) {

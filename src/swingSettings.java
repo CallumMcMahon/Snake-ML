@@ -33,8 +33,6 @@ public class swingSettings extends JFrame implements KeyListener {
     Border blackline = BorderFactory.createLineBorder(Color.black,3,true);
     Border largePadding = BorderFactory.createEmptyBorder(15,40,15,40);
     Border selected = new CompoundBorder(blackline,largePadding);
-    Border empty = BorderFactory.createEmptyBorder();
-    Border testPadding = BorderFactory.createEmptyBorder(50,0,0,0);
 
     final String SOLO = "solo";
     final String MULTIPLAYER = "multiplayer";
@@ -51,22 +49,27 @@ public class swingSettings extends JFrame implements KeyListener {
     public void updateMenu(){
         for (int i = 0;i<3;i++){
             for (int j = 0; j< menu[i].length ;j++){
+                // if option not selected, colour in red
                 if(menu[i][j] == 0) {
                     labels[i][j].setBackground(Color.red);
                     labels[i][j].setOpaque(true);
                 }
+                // if option selected, colour in green
                 else if(menu[i][j] == 1){
                     labels[i][j].setBackground(Color.green);
                     labels[i][j].setOpaque(true);
                 }
+                // highlight current selection with black border
                 if(currentMenuPlace[0] == i && currentMenuPlace[1] == j){
                     labels[i][j].setBorder(selected);
                 }
+                // other borders have normal thin borders
                 else if(menu[i][j] != -1){
                     labels[i][j].setBorder(largePadding);
                 }
             }
         }
+        // switch GUI options based on solo or multiplayer selection
         if (menu[0][0] == 1){
             cl1.show(mechanicsOptions,SOLO);
         }
@@ -84,6 +87,7 @@ public class swingSettings extends JFrame implements KeyListener {
     }
 
     public void choice(){
+        // update choices is the menu system
         String direction="";
         for (String press : key) {
             if (!press.equals("")) {
@@ -162,6 +166,8 @@ public class swingSettings extends JFrame implements KeyListener {
                     else{
                         settings = new int[]{1,4,currentMenuPlace[1]};
                     }
+                    //changing number of players from 0-indexed to 1-indexed
+                    settings[0]+=1;
                     synchronized(syncObject) {
                         syncObject.notify();
                     }
@@ -180,6 +186,7 @@ public class swingSettings extends JFrame implements KeyListener {
     }
 
     public static JFrame makeFirstFrame(){
+        // create frame and set make exitting application kill process gracefully
         JFrame frame = new JFrame("Snakes on a pane");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds((screenWidth-frameWidth)/2, (screenHeight-frameHeight)/2,frameWidth,frameHeight);
@@ -191,23 +198,15 @@ public class swingSettings extends JFrame implements KeyListener {
     }
 
     public swingSettings(Object syncObject, JFrame frame) {
+        // get control of sync object and window frame
         this.syncObject = syncObject;
         this.frame = frame;
 
+        // construct menu
         JPanel panel = new JPanel();
         panel.setPreferredSize(new Dimension(frameWidth,frameHeight));
         this.frame.getContentPane().removeAll();
         this.frame.getContentPane().add(panel);
-/**
-        buttonArea = new JPanel();
-        buttonArea.setLayout(new BoxLayout(buttonArea, BoxLayout.PAGE_AXIS));
-        buttonArea.setPreferredSize(new Dimension(frameWidth,buttonAreaHeight));//(frameHeight+buttonAreaHeight)/2));
-        buttonArea.setLocation(0,100);//(frameHeight+buttonAreaHeight)/2);
-        //buttonArea.setBorder(new EmptyBorder((frameHeight-buttonAreaHeight-10)/2,0,0,0));
-        buttonArea.setBorder(blackline);
-        //buttonArea.setAlignmentY(buttonArea.CENTER_ALIGNMENT);
-        panel.add(buttonArea);
-**/
 
         buttonArea = new JPanel();
         buttonArea.setLayout(new BoxLayout(buttonArea, BoxLayout.PAGE_AXIS));
@@ -219,9 +218,7 @@ public class swingSettings extends JFrame implements KeyListener {
 
 
         JPanel numOfPlayers = new JPanel();
-        //numOfPlayers.setPreferredSize(new Dimension(frameWidth, buttonAreaHeight/3));
         mechanicsOptions = new JPanel();
-        //mechanicsOptions.setPreferredSize(new Dimension(frameWidth,(2*buttonAreaHeight)/3));
         mechanicsOptions.setLayout(new CardLayout());
         labels[0] = new JLabel[2];
         labels[1] = new JLabel[5];
@@ -257,9 +254,7 @@ public class swingSettings extends JFrame implements KeyListener {
         JPanel multiplayerOptions = new JPanel();
         JPanel multiplayerGamemode = new JPanel();
         multiplayerSize = new JPanel();
-        //multiplayerGamemode.setPreferredSize(new Dimension(frameWidth,(buttonAreaHeight)/3));
         multiplayerOptions.setLayout(new BoxLayout(multiplayerOptions, BoxLayout.PAGE_AXIS));
-        //multiplayerOptions.setPreferredSize(new Dimension(frameWidth,(2*buttonAreaHeight)/3));
         multiplayerSize.setLayout(new CardLayout());
         multiplayerOptions.add(multiplayerGamemode);
         multiplayerOptions.add(multiplayerSize);

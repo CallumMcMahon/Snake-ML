@@ -1,14 +1,8 @@
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.*;
 
 /**
  * Created by Callum on 29/06/2017.
@@ -59,7 +53,7 @@ public class swingGUI extends JFrame implements KeyListener{
         this.frame.setBounds(100, 100, row * tileSize, col * tileSize);
         panel.setLayout(new GridLayout(row, col));
         this.frame.addKeyListener(this);
-        apple = new ImageIcon(new ImageIcon(getClass().getResource("apple.png")).getImage().getScaledInstance(tileSize, tileSize, Image.SCALE_DEFAULT));
+        apple = new ImageIcon(new ImageIcon(getClass().getResource("resources/apple.png")).getImage().getScaledInstance(tileSize, tileSize, Image.SCALE_DEFAULT));
         if(showgui) {
             requestFocusInWindow();
             this.frame.setVisible(true);

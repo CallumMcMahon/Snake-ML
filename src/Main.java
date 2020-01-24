@@ -1,28 +1,23 @@
-import javax.swing.*;
-
-import java.util.Arrays;
-
-import static java.lang.Thread.sleep;
-
 /**
  * Created by Callum on 28/06/2017.
  */
+
+import javax.swing.*;
+
 public class Main {
 
+    // app window that is used throughout
     static JFrame frame;
-    static Object syncObject = new Object(); //have main method wait for settings class to finish
+    //object to pause program during setting selection
+    static Object syncObject = new Object();
 
     public static void main(String[] args) {
         final int SNAKE_SIZE = 5;
         int[] settings;
 
-
         boolean AI;
-        boolean rewatch = false;
 
-        if(args.length == 0 ) {//|| true
-
-
+        if(args.length > 0 ) {
         /* GUI SETTINGS */
             swingSettings settingsMenu = new swingSettings(syncObject);
             synchronized (syncObject) {
@@ -32,43 +27,67 @@ public class Main {
                     throw new Error();
                 }
             }
+            //remove menu
             settingsMenu.setActiveMenu(false);
+            //retrieve chosen settings
             settings = settingsMenu.getSettings();
-            settings[0] += 1;//correcting number of players from off-by-one error
             frame = settingsMenu.getFrame();
             AI = false;
         }
         else{
+            //if training AI, use default map size settings
             settings = new int[]{1,0,1};
             frame = swingSettings.makeFirstFrame();
             AI = true;
         }
         if(!AI){
+            // game with user input
             GameLoop humangame = new GameLoop(settings,frame,syncObject,false,true,true,0);
             humangame.loop();
         }
         else {
-            //-----GENETIC ALGORITHM-----
+            /*-----GENETIC ALGORITHM-----*/
+            // number of agents to simulate each epoch
             int popSize = 100000;
             population pop = new population(popSize, true);
             pop.setSettings(settings);
-            // Evolve our population until we reach an optimum solution
+
+            //set convergence criterion
             int generationCount = 0;
-            double generationfitness = 0;
-            while (generationfitness <1100) {
+            boolean converged = false;
+            int convergeEpochs = 8;
+            double[] generationfitness = new double[convergeEpochs];
+
+            // Evolve our population until we reach an optimum solution
+            while (!converged) {
                 generationCount++;
-                System.out.println("Generation: " + generationCount + " Fittest: " + generationfitness);
+                System.out.println("Generation: " + generationCount + " Fittest: " + generationfitness[(generationCount-1)%convergeEpochs]);
+                // recombination and mutation of the top performing agents
                 pop = geneticAlgorithm.evolvePopulation(pop);
                 pop.evaluateFitness();
-                generationfitness = pop.getFittest();
+                generationfitness[generationCount%convergeEpochs] = pop.getFittest();
+                converged = true;
+                // convergence check
+                for (int i = 1; i < convergeEpochs; i++) {
+                    if(generationfitness[i] != generationfitness[i-1]){
+                        converged = false;
+                    }
+                }
+                //show intermediary performance
+                if(generationCount%10==0){
+                    GameLoop solutionGame;
+                    solutionGame = new GameLoop(settings, frame, syncObject, AI, true, false, 0);
+                    solutionGame.setNet(pop.nets[0]);
+                    solutionGame.loop();
+                }
             }
-            System.out.println("Solution found!");
-            System.out.println("Generation: " + generationCount+ " Fittest: " + generationfitness);
 
+            System.out.println("Solution found!");
+            System.out.println("Generation: " + generationCount+ " Fittest: " + generationfitness[0]);
 
             EasyIn.pause("Press enter to view replay");
 
-            rewatch = true;
+            //show final best agent
             GameLoop solutionGame;
             solutionGame = new GameLoop(settings, frame, syncObject, AI, true, false, 0);
             solutionGame.setNet(pop.nets[0]);
@@ -77,7 +96,7 @@ public class Main {
 
     }
 
-
+//unused command line settings
     public static int[] settings(){
         System.out.println("Enter map size.");
         int mapSize = EasyIn.getInt();
